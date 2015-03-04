@@ -1,0 +1,61 @@
+#! /usr/bin/env python3
+
+import time
+#import subprocess
+import logging
+import fritzconnection as fc
+from urllib.request import urlopen
+import argparse
+import configparser
+import os.path
+
+logging.basicConfig(level=logging.INFO, 
+                    format='%(asctime)s %(levelname)-6s %(name)-12s %(message)s',
+                    datefmt='%d.%m. %H:%M:%S')
+logger = logging.getLogger(__name__)
+
+def tryUpdateIP(config):
+    '''Do this stuff with the Fritzbox
+    '''
+    connection = fc.FritzConnection()
+    IP = connection.call_action('WANIPConnection', 'GetExternalIPAddress')['NewExternalIPAddress']
+    user = config['unblockus']['user']
+    password = config['unblockus']['password']
+
+    if IP != tryUpdateIP.oldIP and IP != '0.0.0.0':
+        logger.info("IP changed from {} to {}".format(tryUpdateIP.oldIP,IP))
+        tryUpdateIP.oldIP = IP
+        response = urlopen('https://api.unblock-us.com/login?{}:{}'.format(user, password), timeout = 10)
+        logger.info("response was '{}'".format(response.read().decode("utf-8")))
+
+def init(config, args):
+    config['unblockus'] = {}
+    config['fritzbox'] = {}
+
+    fritzbox = config['fritzbox']
+    unblockus = config['unblockus']
+
+    unblockus['user'] = input('Unblock-US Username: ')
+    unblockus['password'] = input('Unblock-US Password: ')
+    fritzbox['ip'] = input('FritzBox IP: ')
+    with open(args.config, 'w') as configfile:
+        config.write(configfile)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Update IP for Unblock-US by reading from Fritzbox.')
+    parser.add_argument('config',help='path to config file',nargs='?',default='fritzer.conf')
+    parser.add_argument('--reset',help='reset stored infos',action='store_true',default=False)
+    args = parser.parse_args()
+    config = configparser.ConfigParser()
+    config.read(args.config)
+
+    if args.reset or not os.path.exists(args.config):
+        init(config, args)
+    tryUpdateIP.oldIP = '0.0.0.0'
+    logger.info("starting service")
+    try:
+        while True:
+            tryUpdateIP(config)
+            time.sleep(60)
+    except KeyError:
+        init(config,args)
