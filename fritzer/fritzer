@@ -1,7 +1,6 @@
 #! /usr/bin/env python3
 
 import time
-#import subprocess
 import logging
 import fritzconnection as fc
 from urllib.request import urlopen

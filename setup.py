@@ -9,5 +9,8 @@ setup(name='Fritzer',
       author_email='Fettlaus@gmail.com',
       url='https://projects.fettlaus.de/python/fritzer',
       packages=['fritzer'],
+      install_requires=[
+          'fritzconnection',
+      ],
       scripts=['fritzer/fritzer'],
      )
