@@ -1,4 +1,5 @@
 # Fritzer
+[![Build Status](https://travis-ci.org/fettlaus/fritzer.svg?branch=master)](https://travis-ci.org/fettlaus/fritzer)  
 Update Unblock-US with IP reported by FritzBox
 
 Requires Python 3
@@ -19,4 +20,6 @@ Just do a `pip install https://github.com/fettlaus/fritzer/archive/master.zip` a
 ```
 
 # Known problems
-Currently there is a bug within the library `fritzconnection` which this script uses. I opened a [pull request](https://bitbucket.org/kbr/fritzconnection/pull-request/5/) to fix this.
+- Currently there is a bug within the library `fritzconnection` which this script uses. I opened a [pull request](https://bitbucket.org/kbr/fritzconnection/pull-request/5/) to fix this.
+- There are no test cases yet (they would fail anyway because of `fritzconnection`)
+- IP adress of FritzBox is not yet usable
